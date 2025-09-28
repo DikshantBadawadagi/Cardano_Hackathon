@@ -1,0 +1,137 @@
+{
+  "name": "random",
+  "nodes": [
+    {
+      "name": "intro",
+      "type": "conversation",
+      "isStart": true,
+      "metadata": {
+        "position": {
+          "x": 128,
+          "y": 145.5833282470703
+        }
+      },
+      "prompt": "you are an ai assistant that knows about the advertisement idustry",
+      "messagePlan": {
+        "firstMessage": "welcome to media.net how may i help you"
+      }
+    },
+    {
+      "name": "takename",
+      "type": "conversation",
+      "isStart": false,
+      "metadata": {
+        "position": {
+          "x": 102.26161547913756,
+          "y": 133.85222781919424
+        }
+      },
+      "prompt": "please ask the user for his name and store it in the name variable",
+      "messagePlan": {
+        "firstMessage": ""
+      },
+      "variableExtractionPlan": {
+        "output": [
+          {
+            "title": "name",
+            "description": "this is users name",
+            "type": "string",
+            "enum": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "apiRequest_1758818520523",
+      "type": "tool",
+      "metadata": {
+        "position": {
+          "x": -409.59875258484476,
+          "y": 500.92715101065335
+        }
+      },
+      "tool": {
+        "url": "https://lasting-older-architects-holidays.trycloudflare.com/api/send-email",
+        "body": {
+          "type": "object",
+          "required": [
+            "receiverEmail",
+            "message",
+            "subject"
+          ],
+          "properties": {
+            "message": {
+              "type": "string",
+              "default": "{{message}}",
+              "description": "users message"
+            },
+            "subject": {
+              "type": "string",
+              "default": "Sent by my business",
+              "description": "emails subject"
+            },
+            "receiverEmail": {
+              "type": "boolean",
+              "default": "{{email}}",
+              "description": "receivers email address"
+            }
+          }
+        },
+        "name": "email",
+        "type": "apiRequest",
+        "method": "POST",
+        "function": {
+          "name": "api_request_tool",
+          "parameters": {
+            "type": "object",
+            "required": [],
+            "properties": {}
+          },
+          "description": "API request tool"
+        },
+        "messages": [
+          {
+            "type": "request-start",
+            "blocking": false
+          }
+        ],
+        "variableExtractionPlan": {
+          "schema": {
+            "type": "object",
+            "required": [
+              "success",
+              "recipient",
+              "message"
+            ],
+            "properties": {
+              "message": {
+                "type": "string",
+                "description": ""
+              },
+              "success": {
+                "type": "boolean",
+                "description": ""
+              },
+              "recipient": {
+                "type": "string",
+                "description": ""
+              }
+            }
+          },
+          "aliases": []
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "intro",
+      "to": "takename",
+      "condition": {
+        "type": "ai",
+        "prompt": "if the user says yes"
+      }
+    }
+  ],
+  "globalPrompt": ""
+}

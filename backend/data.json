@@ -1,0 +1,341 @@
+{
+  "name": "Upload",
+  "nodes": [
+    {
+      "name": "introduction",
+      "type": "conversation",
+      "isStart": true,
+      "metadata": {
+        "position": {
+          "x": -367.6835289630494,
+          "y": -117.00866896681615
+        }
+      },
+      "prompt": "Youre Dhruv and your role is to help the customer and know his intent you can book appointment with the designer , lodge complaints and raise tickets, or answer general questions about the company, \nListen if he's an existing cutomer or not",
+      "messagePlan": {
+        "firstMessage": "Welcome to Padhiar & Company how may i help you today?"
+      },
+      "toolIds": []
+    },
+    {
+      "name": "conversation_1758635596935",
+      "type": "conversation",
+      "metadata": {
+        "position": {
+          "x": -807.6802070838258,
+          "y": 278.4495345643527
+        }
+      },
+      "prompt": "Ask for his name and store in {{name}} variable and also ask for his email and store it in the {{email}} variable, and aks if he wants to Lodge complaints or raise tickets or book another service",
+      "variableExtractionPlan": {
+        "output": [
+          {
+            "enum": [],
+            "type": "string",
+            "title": "name",
+            "description": "Users name"
+          },
+          {
+            "enum": [],
+            "type": "string",
+            "title": "email",
+            "description": "Users email"
+          }
+        ]
+      },
+      "messagePlan": {
+        "firstMessage": ""
+      },
+      "toolIds": []
+    },
+    {
+      "name": "conversation_1758635750344",
+      "type": "conversation",
+      "metadata": {
+        "position": {
+          "x": 270.96411000875753,
+          "y": 275.68869413437807
+        }
+      },
+      "prompt": "Ask for users email,  and know his intentions whether he wants to know about the past projects about my company or needs brochure of my company or the testimonials, or if he wants to make an appointment",
+      "variableExtractionPlan": {
+        "output": [
+          {
+            "enum": [],
+            "type": "string",
+            "title": "email",
+            "description": "This is users email"
+          }
+        ]
+      },
+      "messagePlan": {
+        "firstMessage": ""
+      },
+      "toolIds": []
+    },
+    {
+      "name": "conversation_1758638214459",
+      "type": "conversation",
+      "metadata": {
+        "position": {
+          "x": -1143.8653621177023,
+          "y": 677.1927413947119
+        }
+      },
+      "prompt": "Ask for what complaints he has, and listen carefully the complaints he has and store it in the complaint variable {{complaints}}",
+      "variableExtractionPlan": {
+        "output": [
+          {
+            "enum": [],
+            "type": "string",
+            "title": "complaints",
+            "description": "The user mentioned complaints"
+          }
+        ]
+      },
+      "messagePlan": {
+        "firstMessage": "use the customers {{name}} for addressing him"
+      },
+      "toolIds": []
+    },
+    {
+      "name": "conversation_1758638414189",
+      "type": "conversation",
+      "metadata": {
+        "position": {
+          "x": -510.84403766371946,
+          "y": 726.8255609934519
+        }
+      },
+      "prompt": "Ask the user what type of service he wants to book and store it in the {{service}} variable",
+      "variableExtractionPlan": {
+        "output": [
+          {
+            "enum": [],
+            "type": "string",
+            "title": "service",
+            "description": "the services user requests"
+          }
+        ]
+      },
+      "messagePlan": {
+        "firstMessage": "Use {{name}} to address him "
+      },
+      "toolIds": []
+    },
+    {
+      "name": "API Request",
+      "type": "tool",
+      "metadata": {
+        "position": {
+          "x": -107.09440459951124,
+          "y": 680.8571362326726
+        }
+      },
+      "tool": {
+        "url": "https://hooks.zapier.com/hooks/catch/24717478/u1h9zsy/",
+        "body": {
+          "type": "object",
+          "required": [
+            "Email"
+          ],
+          "properties": {
+            "Email": {
+              "type": "string",
+              "default": "{{email}}",
+              "description": "Users email_id"
+            }
+          }
+        },
+        "name": "sendBrochureEmail",
+        "type": "apiRequest",
+        "method": "POST",
+        "function": {
+          "name": "api_request_tool",
+          "parameters": {
+            "type": "object",
+            "required": [],
+            "properties": {}
+          },
+          "description": "API request tool"
+        },
+        "messages": [
+          {
+            "type": "request-start",
+            "blocking": false
+          }
+        ],
+        "variableExtractionPlan": {
+          "schema": {
+            "type": "object",
+            "required": [],
+            "properties": {}
+          },
+          "aliases": []
+        }
+      }
+    },
+    {
+      "name": "conversation_1758639265265",
+      "type": "conversation",
+      "metadata": {
+        "position": {
+          "x": 591.4694363036413,
+          "y": 637.8655583375873
+        }
+      },
+      "prompt": "Ask him about his house details like what BHK house is it, whats the area of the house is squareft and whats the budget he has for designing his house, and store all this information in the variables, and also take his email address and name and store it and then store this info as well, tell him its needed to make an appointment",
+      "variableExtractionPlan": {
+        "output": [
+          {
+            "enum": [],
+            "type": "string",
+            "title": "house_info",
+            "description": "The users house information"
+          },
+          {
+            "enum": [],
+            "type": "string",
+            "title": "name",
+            "description": "users name"
+          },
+          {
+            "enum": [],
+            "type": "string",
+            "title": "email",
+            "description": "users email"
+          },
+          {
+            "enum": [],
+            "type": "number",
+            "title": "budget",
+            "description": "the users budget for house makeover"
+          }
+        ]
+      },
+      "messagePlan": {
+        "firstMessage": ""
+      },
+      "toolIds": []
+    },
+    {
+      "name": "apiRequest_1758641079929",
+      "type": "tool",
+      "metadata": {
+        "position": {
+          "x": -1605.0079729568872,
+          "y": 1069.5192166177076
+        }
+      },
+      "tool": {
+        "url": "https://hooks.zapier.com/hooks/catch/24717478/u1h9zsy/",
+        "body": {
+          "type": "object",
+          "required": [],
+          "properties": {
+            "{{name}}": {
+              "type": "string",
+              "default": "",
+              "description": ""
+            },
+            "{{email}}": {
+              "type": "string",
+              "default": "",
+              "description": ""
+            },
+            "{{complaints}}": {
+              "type": "string",
+              "default": "",
+              "description": ""
+            }
+          }
+        },
+        "name": "sendComplaintData",
+        "type": "apiRequest",
+        "method": "POST",
+        "function": {
+          "name": "api_request_tool",
+          "parameters": {
+            "type": "object",
+            "required": [],
+            "properties": {}
+          },
+          "description": "API request tool"
+        },
+        "messages": [
+          {
+            "type": "request-start",
+            "blocking": false
+          }
+        ],
+        "variableExtractionPlan": {
+          "schema": {
+            "type": "object",
+            "required": [],
+            "properties": {}
+          },
+          "aliases": []
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "introduction",
+      "to": "conversation_1758635596935",
+      "condition": {
+        "type": "ai",
+        "prompt": "If user is existing customer"
+      }
+    },
+    {
+      "from": "introduction",
+      "to": "conversation_1758635750344",
+      "condition": {
+        "type": "ai",
+        "prompt": "If he's not an existing customer"
+      }
+    },
+    {
+      "from": "conversation_1758635596935",
+      "to": "conversation_1758638214459",
+      "condition": {
+        "type": "ai",
+        "prompt": "If the user wants to lodge complaints or raise tickets"
+      }
+    },
+    {
+      "from": "conversation_1758635596935",
+      "to": "conversation_1758638414189",
+      "condition": {
+        "type": "ai",
+        "prompt": "if the user wants to book another service"
+      }
+    },
+    {
+      "from": "conversation_1758635750344",
+      "to": "API Request",
+      "condition": {
+        "type": "ai",
+        "prompt": "If the customer wants testimonials or wants to see the brochure"
+      }
+    },
+    {
+      "from": "conversation_1758635750344",
+      "to": "conversation_1758639265265",
+      "condition": {
+        "type": "ai",
+        "prompt": "If the user wants to get an appointment"
+      }
+    },
+    {
+      "from": "conversation_1758638214459",
+      "to": "apiRequest_1758641079929",
+      "condition": {
+        "type": "ai",
+        "prompt": "The complaint details has been given by the customer"
+      }
+    }
+  ],
+  "globalPrompt": ""
+}
