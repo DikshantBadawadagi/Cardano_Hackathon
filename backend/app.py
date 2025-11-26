@@ -8,7 +8,8 @@ from vapi_manager import create_vapi_workflow
 from workflow import build_demo_workflow
 from app.routes.auth_routes import auth_bp
 from app.routes.workspace_routes import ws_bp
-from app.db import db 
+from app.routes.docs_routes import docs_bp
+# db client is initialized lazily in app.db when needed
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -17,6 +18,7 @@ app = Flask(__name__, static_folder='../frontend/dist')
 CORS(app) # Enable CORS for your React frontend
 app.register_blueprint(auth_bp, url_prefix='/api')
 app.register_blueprint(ws_bp, url_prefix='/api/workspaces')
+app.register_blueprint(docs_bp, url_prefix='/api')
 
 # Serve the React frontend on the root URL
 @app.route('/', defaults={'path': ''})
@@ -60,8 +62,8 @@ def make_therapy_call_endpoint():
     if not phone_number or not name:
         return jsonify({"error": "phone_number and name are required"}), 400
 
-    from vapi_manager import make_therapy_call
-    result = make_therapy_call(phone_number, name, workflow_id)
+    from vapi_manager import make_call
+    result = make_call(phone_number, name, workflow_id)
     
     if "error" in result:
         return jsonify(result), 500

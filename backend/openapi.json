@@ -1,0 +1,90 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Maukikh API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "http://localhost:5000" }
+  ],
+  "paths": {
+    "/api/register": {
+      "post": {
+        "summary": "Register a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" },
+                  "name": { "type": "string" }
+                },
+                "required": ["email","password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created" },
+          "409": { "description": "User exists" }
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "summary": "Login user",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object", "properties": { "email": {"type":"string"}, "password": {"type":"string"} }, "required":["email","password"] } } }
+        },
+        "responses": { "200": { "description": "Logged in" }, "401": { "description": "Invalid credentials" } }
+      }
+    },
+    "/api/logout": { "post": { "summary": "Logout", "responses": { "200": { "description": "Logged out" } } } },
+    "/api/me": { "get": { "summary": "Get current user", "responses": { "200": { "description": "Current user" }, "401": { "description": "Unauthorized" } } } },
+
+    "/api/users/{user_id}": {
+      "put": {
+        "summary": "Update user",
+        "parameters": [{ "name": "user_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "name": {"type":"string"}, "password": {"type":"string"} } } } } },
+        "responses": { "200": { "description": "Updated" }, "403": { "description": "Forbidden" } }
+      }
+    },
+
+    "/api/workspaces": {
+      "post": {
+        "summary": "Create workspace",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "name": {"type":"string"}, "is_editable_by_collaborators": {"type":"boolean"} }, "required":["name"] } } } },
+        "responses": { "201": { "description": "Created" } }
+      },
+      "get": {
+        "summary": "List workspaces for current user",
+        "responses": { "200": { "description": "List" } }
+      }
+    },
+
+    "/api/workspaces/{workspace_id}": {
+      "get": { "summary": "Get workspace", "parameters": [{ "name":"workspace_id","in":"path","required":true,"schema":{"type":"string"}}], "responses": { "200": {"description":"Workspace"}, "404": {"description":"Not found"} } },
+      "put": { "summary": "Update workspace", "parameters": [{ "name":"workspace_id","in":"path","required":true,"schema":{"type":"string"}}], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "name": {"type":"string"}, "is_editable_by_collaborators": {"type":"boolean"} } } } } }, "responses": { "200": {"description":"Updated"}, "403": {"description":"Forbidden"} } },
+      "delete": { "summary": "Delete workspace", "parameters": [{ "name":"workspace_id","in":"path","required":true,"schema":{"type":"string"}}], "responses": { "200": {"description":"Deleted"}, "403": {"description":"Forbidden"} } }
+    },
+
+    "/api/workspaces/{workspace_id}/members": {
+      "post": {
+        "summary": "Add member by email",
+        "parameters": [{ "name":"workspace_id","in":"path","required":true,"schema":{"type":"string"}}],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "email": {"type":"string"}, "role": {"type":"string","enum":["viewer","editor","admin"]} }, "required":["email"] } } } },
+        "responses": { "201": { "description": "Membership created" }, "400": { "description": "User not found or bad request" }, "403": { "description": "Forbidden" } }
+      },
+      "get": {
+        "summary": "List members",
+        "parameters": [{ "name":"workspace_id","in":"path","required":true,"schema":{"type":"string"}}],
+        "responses": { "200": { "description": "Members list" } }
+      }
+    }
+  }
+}
