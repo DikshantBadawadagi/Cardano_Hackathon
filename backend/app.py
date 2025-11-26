@@ -6,7 +6,8 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from vapi_manager import create_vapi_workflow
 from workflow import build_demo_workflow
-from auth import auth_bp
+from app.routes.auth_routes import auth_bp
+from app.routes.workspace_routes import ws_bp
 from app.db import db 
 
 # Load environment variables from the .env file
@@ -15,6 +16,7 @@ load_dotenv()
 app = Flask(__name__, static_folder='../frontend/dist')
 CORS(app) # Enable CORS for your React frontend
 app.register_blueprint(auth_bp, url_prefix='/api')
+app.register_blueprint(ws_bp, url_prefix='/api/workspaces')
 
 # Serve the React frontend on the root URL
 @app.route('/', defaults={'path': ''})

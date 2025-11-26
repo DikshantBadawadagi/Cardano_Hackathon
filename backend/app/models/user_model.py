@@ -1,12 +1,14 @@
 from datetime import datetime
-from passlib.hash import bcrypt
+from app.utils.password_utils import hash_password
+
 
 class UserModel:
     collection_name = "users"
 
     def __init__(self, email, password, name=None):
         self.email = email.lower().strip()
-        self.password_hash = bcrypt.hash(password)
+        # Use centralized helper which normalizes long passwords before bcrypt
+        self.password_hash = hash_password(password)
         self.name = name
         self.created_at = datetime.utcnow()
         self.email_verified = False
