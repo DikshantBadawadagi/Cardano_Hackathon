@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from vapi_manager import create_vapi_workflow
 from workflow import build_demo_workflow
 from auth import auth_bp
+from app.db import db 
 
 # Load environment variables from the .env file
 load_dotenv()
