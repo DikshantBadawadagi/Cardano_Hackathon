@@ -458,7 +458,14 @@ import ConversationNode from './ConversationNode';
 import ToolNode from './ToolNode';
 import CustomEdge from './EdgeComponent';
 import NodeContextMenu from './NodeContextMenu';
-import { createOrUpdateNode, deleteNode, createOrUpdateEdge, deleteEdge } from './utils/api';
+import { 
+  createOrUpdateNode, 
+  deleteNode, 
+  createOrUpdateEdge, 
+  deleteEdge,
+  getCurrentWorkspace,
+  getCurrentWorkflow 
+} from './utils/api';
 import { loadWorkflowForReactFlow, refreshWorkflowData } from './utils/workflowLoader';
 
 // Node types - import and register both components
@@ -472,7 +479,7 @@ const edgeTypes = {
   custom: CustomEdge,
 };
 
-export default function WorkflowCanvas({ onProvideRefresh }) {
+export default function WorkflowCanvas({ workspaceId, workflowId, onProvideRefresh }) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { screenToFlowPosition } = useReactFlow();
@@ -531,22 +538,9 @@ export default function WorkflowCanvas({ onProvideRefresh }) {
     required: false
   });
 
-//Load workflow data on component mount
-  useEffect(() => {
-    const loadInitialWorkflow = async () => {
-      try {
-        const { nodes, edges } = await loadWorkflowForReactFlow(handleNodeClick, handleEdgeDelete);
-        setNodes(nodes);
-        setEdges(edges);
-        console.log('Initial workflow loaded successfully');
-      } catch (error) {
-        console.error('Failed to load initial workflow:', error);
-      }
-    };
-
-    loadInitialWorkflow();
-  }, []);
-
+  // Get workspace/workflow IDs - prefer props, fall back to context
+  const wsId = workspaceId || getCurrentWorkspace();
+  const wfId = workflowId || getCurrentWorkflow();
 
   // Handle node click for context menu
   const handleNodeClick = useCallback((nodeId, nodeData, clickPosition) => {
@@ -560,20 +554,20 @@ export default function WorkflowCanvas({ onProvideRefresh }) {
   // Handle edge delete
   const handleEdgeDelete = useCallback(async (edgeId, edgeData) => {
     try {
-      await deleteEdge(edgeData);
+      await deleteEdge(wsId, wfId, edgeData);
       setEdges((edges) => edges.filter((edge) => edge.id !== edgeId));
       console.log('Edge deleted successfully');
     } catch (error) {
       console.error('Failed to delete edge:', error);
     }
-  }, [setEdges]);
+  }, [setEdges, wsId, wfId]);
 
   // Handle node delete
   const handleNodeDelete = useCallback(async () => {
     if (!contextMenu) return;
     
     try {
-      await deleteNode(contextMenu.nodeData);
+      await deleteNode(wsId, wfId, contextMenu.nodeData);
       setNodes((nodes) => nodes.filter((node) => node.id !== contextMenu.nodeId));
       console.log('Node deleted successfully');
     } catch (error) {
@@ -581,7 +575,30 @@ export default function WorkflowCanvas({ onProvideRefresh }) {
     }
     
     setContextMenu(null);
-  }, [contextMenu, setNodes]);
+  }, [contextMenu, setNodes, wsId, wfId]);
+
+  // Load workflow data on component mount or when IDs change
+  useEffect(() => {
+    const loadInitialWorkflow = async () => {
+      if (!wsId || !wfId) {
+        console.log('No workspace or workflow selected');
+        setNodes([]);
+        setEdges([]);
+        return;
+      }
+      
+      try {
+        const { nodes, edges } = await loadWorkflowForReactFlow(wsId, wfId, handleNodeClick, handleEdgeDelete);
+        setNodes(nodes);
+        setEdges(edges);
+        console.log('Initial workflow loaded successfully');
+      } catch (error) {
+        console.error('Failed to load initial workflow:', error);
+      }
+    };
+
+    loadInitialWorkflow();
+  }, [wsId, wfId, handleNodeClick, handleEdgeDelete]);
 
   // Handle connection
   const onConnect = useCallback((connection) => {
@@ -615,7 +632,7 @@ export default function WorkflowCanvas({ onProvideRefresh }) {
     setEdges((edges) => addEdge(newEdge, edges));
     
     // Save to backend
-    createOrUpdateEdge(edgeData)
+    createOrUpdateEdge(wsId, wfId, edgeData)
       .then(() => {
         console.log('Edge created successfully');
       })
@@ -624,7 +641,7 @@ export default function WorkflowCanvas({ onProvideRefresh }) {
       });
 
     setEdgeConditionPrompt('');
-  }, [nodes, edgeConditionPrompt, setEdges, handleEdgeDelete]);
+  }, [nodes, edgeConditionPrompt, setEdges, handleEdgeDelete, wsId, wfId]);
 
   // Reset form
   const resetForm = () => {
@@ -649,15 +666,15 @@ export default function WorkflowCanvas({ onProvideRefresh }) {
 
 
   const handleWorkflowRefresh = useCallback(async () => {
-    await refreshWorkflowData(setNodes, setEdges, handleNodeClick, handleEdgeDelete);
-  }, [setNodes, setEdges, handleNodeClick, handleEdgeDelete]);
+    await refreshWorkflowData(setNodes, setEdges, handleNodeClick, handleEdgeDelete, wsId, wfId);
+  }, [setNodes, setEdges, handleNodeClick, handleEdgeDelete, wsId, wfId]);
 
  
-    useEffect(() => {
-     if (typeof onProvideRefresh === 'function') {
-        onProvideRefresh(handleWorkflowRefresh);
-      }
-    }, [onProvideRefresh, handleWorkflowRefresh]);
+  useEffect(() => {
+    if (typeof onProvideRefresh === 'function') {
+      onProvideRefresh(handleWorkflowRefresh);
+    }
+  }, [onProvideRefresh, handleWorkflowRefresh]);
 
 
 
@@ -759,7 +776,7 @@ export default function WorkflowCanvas({ onProvideRefresh }) {
     };
 
     try {
-      await createOrUpdateNode(nodeData);
+      await createOrUpdateNode(wsId, wfId, nodeData);
       setNodes((nds) => [...nds, newNode]);
       console.log('Conversation node created successfully');
     } catch (error) {
@@ -872,7 +889,7 @@ export default function WorkflowCanvas({ onProvideRefresh }) {
     };
 
     try {
-      await createOrUpdateNode(nodeData);
+      await createOrUpdateNode(wsId, wfId, nodeData);
       setNodes((nds) => [...nds, newNode]);
       console.log('Tool node created successfully');
     } catch (error) {
