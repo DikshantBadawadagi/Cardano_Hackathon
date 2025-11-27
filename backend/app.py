@@ -9,6 +9,8 @@ from workflow import build_demo_workflow
 from app.routes.auth_routes import auth_bp
 from app.routes.workspace_routes import ws_bp
 from app.routes.docs_routes import docs_bp
+from app.routes.workflow_routes import workflow_bp
+from app.middleware.auth_middleware import init_auth_middleware
 # db client is initialized lazily in app.db when needed
 
 # Load environment variables from the .env file
@@ -19,6 +21,12 @@ CORS(app) # Enable CORS for your React frontend
 app.register_blueprint(auth_bp, url_prefix='/api')
 app.register_blueprint(ws_bp, url_prefix='/api/workspaces')
 app.register_blueprint(docs_bp, url_prefix='/api')
+# Register workflow routes as-is; the routes in `workflow_routes.py` include
+# the full `/api/workspaces/.../workflows` paths, so do not add an extra prefix.
+app.register_blueprint(workflow_bp)
+
+# Initialize auth middleware (attaches request._id and g.current_user when token present)
+init_auth_middleware(app)
 
 # Serve the React frontend on the root URL
 @app.route('/', defaults={'path': ''})
@@ -71,5 +79,34 @@ def make_therapy_call_endpoint():
     return jsonify(result)
 
 if __name__ == '__main__':
+    # Startup diagnostics: print a small status so it's obvious the app started
+    print("--- Starting Maukikh Flask app ---")
+    # Show whether MONGO_URI is present (mask value for safety)
+    mongo_uri = os.getenv('MONGO_URI')
+    if mongo_uri:
+        masked = mongo_uri
+        try:
+            # mask credentials if present
+            if '//' in mongo_uri and '@' in mongo_uri:
+                prefix, rest = mongo_uri.split('//', 1)
+                creds, host = rest.split('@', 1)
+                masked = prefix + '//' + creds.split(':')[0] + ':***@' + host
+        except Exception:
+            masked = mongo_uri[:16] + '...'
+        print(f"MONGO_URI detected: {masked}")
+    else:
+        print("MONGO_URI not set in environment")
+
+    # Try to import db module to force early DB configuration and show errors
+    try:
+        print("Probing DB initialization (importing app.db)...")
+        import app.db as _db
+        # If import succeeds, give a short success message
+        print("app.db imported successfully. DB client created.")
+    except Exception as e:
+        print("Error during DB initialization:")
+        import traceback
+        traceback.print_exc()
+
     # For local development, you might want to run the Flask server on a different port
     app.run(debug=True, port=5000)
