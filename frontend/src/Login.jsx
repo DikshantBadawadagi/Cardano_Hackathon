@@ -80,6 +80,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { loginUser } from './utils/api'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -95,11 +96,14 @@ export default function Login() {
 
   const onSubmit = (e) => {
     e.preventDefault()
-    console.log('Login submit:', { name, email, password })
-    navigate('/dashboard', { 
-      replace: true, 
-      state: { email, name } 
-    })
+    console.log('Login submit:', { email })
+    loginUser({ email, password })
+      .then(() => {
+        navigate('/dashboard', { replace: true, state: { email, name } })
+      })
+      .catch(err => {
+        alert('Login failed: ' + (err.message || err))
+      })
   }
 
   return (

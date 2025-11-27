@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { registerUser } from './utils/api'
 
 export default function Signup() {
   const navigate = useNavigate()
@@ -12,8 +13,19 @@ export default function Signup() {
 
   const onSubmit = (e) => {
     e.preventDefault()
-    console.log('Signup submit:', { name, email, password, confirmPassword })
-    navigate('/login', { replace: true, state: { email, name } })
+    if (password !== confirmPassword) {
+      alert('Passwords do not match')
+      return
+    }
+
+    registerUser({ name, email, password })
+      .then(() => {
+        // go to login and prefill
+        navigate('/login', { replace: true, state: { email, name } })
+      })
+      .catch(err => {
+        alert('Signup failed: ' + (err.message || err))
+      })
   }
 
   return (

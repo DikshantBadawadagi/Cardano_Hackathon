@@ -1,5 +1,5 @@
 // utils/api.js
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127:0.0.1:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5000';
 
 // Node API calls
 export const createOrUpdateNode = async (nodeData) => {
@@ -159,4 +159,100 @@ export const makeCall = async (phoneNumber, name, workflowName) => {
     console.error('Error in makeCall:', error);
     throw error;
   }
+};
+
+// ----------------- Auth helpers -----------------
+export const registerUser = async ({ name, email, password }) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include', // important so cookies (if any) are set
+      body: JSON.stringify({ name, email, password })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data?.error || `HTTP ${response.status}`);
+    }
+
+    // Backend returns created user in data.user
+    const user = data.user || null;
+    if (user) localStorage.setItem('currentUser', JSON.stringify(user));
+    // If backend returns a token in body, store it as well (best-effort)
+    if (data.token) localStorage.setItem('access_token', data.token);
+    return { user, raw: data };
+  } catch (err) {
+    console.error('Error registering user:', err);
+    throw err;
+  }
+};
+
+export const loginUser = async ({ email, password }) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include', // allow HttpOnly cookie to be set by backend
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data?.error || `HTTP ${response.status}`);
+    }
+
+    // If backend returns token in body (optional), store it
+    if (data.token) localStorage.setItem('access_token', data.token);
+
+    // Best-effort: fetch /api/me to get current user (relies on cookie)
+    try {
+      const meResp = await fetch(`${API_BASE_URL}/api/me`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+      if (meResp.ok) {
+        const meData = await meResp.json();
+        const user = meData.user || meData.user || null;
+        if (user) localStorage.setItem('currentUser', JSON.stringify(user));
+      }
+    } catch (e) {
+      // ignore me fetch failure; still consider login success if server returned ok
+    }
+
+    return { raw: data };
+  } catch (err) {
+    console.error('Error logging in:', err);
+    throw err;
+  }
+};
+
+export const fetchCurrentUser = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/me`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    const user = data.user || null;
+    if (user) localStorage.setItem('currentUser', JSON.stringify(user));
+    return user;
+  } catch (err) {
+    console.error('Error fetching current user:', err);
+    return null;
+  }
+};
+
+export const logoutUser = async () => {
+  try {
+    await fetch(`${API_BASE_URL}/api/logout`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+  } catch (e) {
+    // ignore
+  }
+  localStorage.removeItem('currentUser');
+  localStorage.removeItem('access_token');
 };

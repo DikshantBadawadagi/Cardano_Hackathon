@@ -18,7 +18,10 @@ from dashboard import vapi_bpt
 load_dotenv()
 
 app = Flask(__name__, static_folder='../frontend/dist')
-CORS(app) # Enable CORS for your React frontend
+# Enable CORS for the React frontend and allow credentials (cookies)
+# Adjust the origin if your frontend runs on a different host/port.
+frontend_origin = os.getenv('FRONTEND_ORIGIN', 'http://127.0.0.1:5173')
+CORS(app, origins=[frontend_origin], supports_credentials=True)
 app.register_blueprint(auth_bp, url_prefix='/api')
 app.register_blueprint(ws_bp, url_prefix='/api/workspaces')
 app.register_blueprint(docs_bp, url_prefix='/api')
