@@ -11,6 +11,7 @@ from app.routes.workspace_routes import ws_bp
 from app.routes.docs_routes import docs_bp
 from app.routes.workflow_routes import workflow_bp
 from app.middleware.auth_middleware import init_auth_middleware
+from dashboard import vapi_bpt
 # db client is initialized lazily in app.db when needed
 
 # Load environment variables from the .env file
@@ -24,6 +25,8 @@ app.register_blueprint(docs_bp, url_prefix='/api')
 # Register workflow routes as-is; the routes in `workflow_routes.py` include
 # the full `/api/workspaces/.../workflows` paths, so do not add an extra prefix.
 app.register_blueprint(workflow_bp)
+# Register dashboard VAPI routes under /api (endpoints like /api/vapi/call)
+app.register_blueprint(vapi_bpt, url_prefix='/api')
 
 # Initialize auth middleware (attaches request._id and g.current_user when token present)
 init_auth_middleware(app)

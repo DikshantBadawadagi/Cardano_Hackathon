@@ -8,7 +8,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 
-const API_URL = "https://plugin-administrator-angela-ser.trycloudflare.com/phoneNumber"
+const API_URL = "http://127.0.0.1:5000/api/phoneNumber"
 
 function formatPhone(num) {
   if (!num) return ""

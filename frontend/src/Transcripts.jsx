@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-const API_URL = "https://plugin-administrator-angela-ser.trycloudflare.com/transcript"
+const API_URL = "http://127.0.0.1:5000/api/transcript"
 
 function parseTranscript(raw) {
   // Split by newline, trim, and map AI/User prefixes

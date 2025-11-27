@@ -399,7 +399,7 @@ export default function Dashboard() {
 
   const [collapsed, setCollapsed] = useState(false)
 
-  const BASE_URL = "https://plugin-administrator-angela-ser.trycloudflare.com"
+  const BASE_URL = "http://127.0.0.1:5000/api"
 
   // Fetch time and date data
   const fetchTimeData = useCallback(async () => {

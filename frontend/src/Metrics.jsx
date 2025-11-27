@@ -22,7 +22,7 @@ import {
   Line,
 } from "recharts"
 
-const API_URL = "https://plugin-administrator-angela-ser.trycloudflare.com/timeDate"
+const API_URL = "http://127.0.0.1:5000/api/timeDate"
 const API_HEADERS = {
   "ngrok-skip-browser-warning": "true",
   "Content-Type": "application/json",
@@ -124,7 +124,7 @@ export default function Metrics() {
   )
 
   // const uniqueDays = chartData.length
-  const uniqueDays = 1
+  const uniqueDays = data?.dates?.length || 0
   const totalTime = data?.totalTime || "-"
 
   return (

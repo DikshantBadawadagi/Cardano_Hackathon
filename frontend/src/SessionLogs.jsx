@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 
-const API_URL = "https://plugin-administrator-angela-ser.trycloudflare.com/sessionLogs"
+const API_URL = "http://127.0.0.1:5000/api/sessionLogs"
 
 function MessageBubble({ role, text }) {
   // Safety checks for props
