@@ -10,6 +10,7 @@ from app.routes.auth_routes import auth_bp
 from app.routes.workspace_routes import ws_bp
 from app.routes.docs_routes import docs_bp
 from app.routes.workflow_routes import workflow_bp
+from app.routes.vapi_routes import vapi_bp as app_vapi_bp
 from app.middleware.auth_middleware import init_auth_middleware
 from dashboard import vapi_bpt
 # db client is initialized lazily in app.db when needed
@@ -30,6 +31,8 @@ app.register_blueprint(docs_bp, url_prefix='/api')
 app.register_blueprint(workflow_bp)
 # Register dashboard VAPI routes under /api (endpoints like /api/vapi/call)
 app.register_blueprint(vapi_bpt, url_prefix='/api')
+# Register our new VAPI upload route under /api/vapi
+app.register_blueprint(app_vapi_bp, url_prefix='/api/vapi')
 
 # Initialize auth middleware (attaches request._id and g.current_user when token present)
 init_auth_middleware(app)

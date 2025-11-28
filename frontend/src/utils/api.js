@@ -611,7 +611,7 @@ export const makeCall = async (workspaceId, workflowId, phoneNumber, name, workf
 
     // Step 2: Upload workflow to Vapi
     const workflowUploadResponse = await authenticatedFetch(
-      `${API_BASE_URL}/api/workflow/upload`,
+      `${API_BASE_URL}/api/vapi/upload-workflow`,
       {
         method: 'POST',
         body: JSON.stringify({
@@ -626,20 +626,25 @@ export const makeCall = async (workspaceId, workflowId, phoneNumber, name, workf
       throw new Error('Workflow ID not found in upload response.');
     }
 
-    // Step 3: Use the workflow ID to make the call
-    const callResponse = await authenticatedFetch(
-      `${API_BASE_URL}/api/make-call`,
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          phone_number: phoneNumber,
-          name,
-          workflow_id: vapiWorkflowId
-        })
-      }
-    );
+    // // Step 3: Use the workflow ID to make the call
+    // const callResponse = await authenticatedFetch(
+    //   `${API_BASE_URL}/api/make-call`,
+    //   {
+    //     method: 'POST',
+    //     body: JSON.stringify({
+    //       phone_number: phoneNumber,
+    //       name,
+    //       workflow_id: vapiWorkflowId
+    //     })
+    //   }
+    // );
 
-    return callResponse;
+    // return callResponse;
+
+
+    // Return the Vapi upload response and do NOT proceed to make the call yet
+    // (higher-level code can call the make-call endpoint once upload is verified)
+    return workflowUploadResponse;
   } catch (error) {
     console.error('Error in makeCall:', error);
     throw error;

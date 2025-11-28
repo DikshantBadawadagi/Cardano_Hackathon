@@ -34,6 +34,35 @@ def create_vapi_workflow(api_key: str):
         return {"error": str(e)}
 
 
+def create_vapi_workflow_from_object(api_key: str, workflow_data: dict):
+    """
+    Sends the given workflow JSON object directly to the Vapi API.
+    This function mirrors `create_vapi_workflow` but accepts the workflow
+    JSON object instead of reading from `data.json` on disk.
+    """
+    vapi_api_url = "https://api.vapi.ai/workflow"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+    # Print a masked API key for debugging
+    masked = api_key[:8] + "..." + api_key[-4:] if api_key and len(api_key) > 12 else "***"
+    print(f"Using API Key: {masked}")
+
+    try:
+        # Ensure we send a single JSON object (not a list)
+        if not isinstance(workflow_data, dict):
+            print("Warning: workflow_data is not an object, attempting to coerce")
+
+        response = requests.post(vapi_api_url, headers=headers, json=workflow_data)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Error creating Vapi workflow from object: {e}")
+        return {"error": str(e)}
+
+
 
 def make_call(phone_number, name, workflow_id=None):
     """
