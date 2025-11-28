@@ -19,10 +19,19 @@ const Call = () => {
   const [workflowName, setWorkflowName] = useState('');
 
   const handleCall = async () => {
-    if (!phone.trim() || !name.trim() || !workflowName.trim()) return;
+    if (!phone.trim() || !name.trim()) return;
 
     try {
-      await makeCall(phone, name, workflowName);
+      // Get workspace and workflow IDs from localStorage
+      const workspaceId = localStorage.getItem('currentWorkspaceId');
+      const workflowId = localStorage.getItem('currentWorkflowId');
+
+      if (!workspaceId || !workflowId) {
+        alert('Please select a workspace and workflow first');
+        return;
+      }
+
+      await makeCall(workspaceId, workflowId, phone, name, workflowName);
       alert('Call initiated successfully!');
       setIsCallDialogOpen(false);
       setPhone('');
@@ -76,7 +85,7 @@ const Call = () => {
           <Button
             onClick={handleCall}
             className="w-full"
-            disabled={!phone.trim() || !name.trim() || !workflowName.trim()}
+            disabled={!phone.trim() || !name.trim()}
           >
             Initiate Call
           </Button>

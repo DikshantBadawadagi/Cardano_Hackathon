@@ -64,7 +64,7 @@ def create_vapi_workflow_from_object(api_key: str, workflow_data: dict):
 
 
 
-def make_call(phone_number, name, workflow_id=None):
+def make_call(phone_number, name, workflow_id=None, assistant_id=None):
     """
     Makes a phone call using the VAPI API and Twilio integration.
     """
@@ -87,6 +87,10 @@ def make_call(phone_number, name, workflow_id=None):
             "twilioPhoneNumber": os.getenv("TWILIO_PHONE_NUMBER")
         }
     }
+
+    # Add assistantId if provided
+    # if assistant_id:
+    #     payload["assistantId"] = assistant_id
 
     headers = {
         "Authorization": f"Bearer {api_key}",

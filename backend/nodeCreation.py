@@ -534,11 +534,12 @@ def make_call_endpoint():
     phone_number = data.get('phone_number')
     name = data.get('name')
     workflow_id = data.get('workflow_id')  # Optional
+    assistant_id = data.get('assistant_id')  # Optional
 
     if not phone_number or not name:
         return jsonify({"error": "phone_number and name are required"}), 400
 
-    result = make_call(phone_number, name, workflow_id)
+    result = make_call(phone_number, name, workflow_id, assistant_id)
 
     if "error" in result:
         return jsonify(result), 500

@@ -259,6 +259,7 @@
 
 // utils/api.js
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5000';
+const VAPI_ASSISTANT_ID = import.meta.env.VITE_VAPI_ASSISTANT_ID || 'd55f90ea-6106-4634-a462-dbf049e0c240';
 
 // ==================== HELPER FUNCTIONS ====================
 
@@ -626,25 +627,21 @@ export const makeCall = async (workspaceId, workflowId, phoneNumber, name, workf
       throw new Error('Workflow ID not found in upload response.');
     }
 
-    // // Step 3: Use the workflow ID to make the call
-    // const callResponse = await authenticatedFetch(
-    //   `${API_BASE_URL}/api/make-call`,
-    //   {
-    //     method: 'POST',
-    //     body: JSON.stringify({
-    //       phone_number: phoneNumber,
-    //       name,
-    //       workflow_id: vapiWorkflowId
-    //     })
-    //   }
-    // );
+    // Step 3: Use the workflow ID to make the call
+    const callResponse = await authenticatedFetch(
+      `${API_BASE_URL}/api/make-call`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          phone_number: phoneNumber,
+          name,
+          workflow_id: vapiWorkflowId,
+          assistant_id: VAPI_ASSISTANT_ID
+        })
+      }
+    );
 
-    // return callResponse;
-
-
-    // Return the Vapi upload response and do NOT proceed to make the call yet
-    // (higher-level code can call the make-call endpoint once upload is verified)
-    return workflowUploadResponse;
+    return callResponse;
   } catch (error) {
     console.error('Error in makeCall:', error);
     throw error;
