@@ -492,7 +492,9 @@ export default function WorkflowCanvas({ workspaceId, workflowId, onProvideRefre
   // Context menu state
   const [contextMenu, setContextMenu] = useState(null);
   
-  // Edge creation states
+  // Edge condition dialog states
+  const [isEdgeConditionDialogOpen, setIsEdgeConditionDialogOpen] = useState(false);
+  const [pendingEdgeConnection, setPendingEdgeConnection] = useState(null);
   const [edgeConditionPrompt, setEdgeConditionPrompt] = useState('');
 
   // Form states for conversation node
@@ -600,13 +602,53 @@ export default function WorkflowCanvas({ workspaceId, workflowId, onProvideRefre
     loadInitialWorkflow();
   }, [wsId, wfId, handleNodeClick, handleEdgeDelete]);
 
-  // Handle connection
+  // Handle node drag stop - save position to MongoDB
+  const handleNodeDragStop = useCallback(async (event, node) => {
+    if (!wsId || !wfId || !node.data?.nodeData) return;
+
+    // Update the nodeData with new position
+    const updatedNodeData = {
+      ...node.data.nodeData,
+      metadata: {
+        ...node.data.nodeData.metadata,
+        position: {
+          x: node.position.x,
+          y: node.position.y
+        }
+      }
+    };
+
+    try {
+      await createOrUpdateNode(wsId, wfId, updatedNodeData);
+      console.log(`Node "${updatedNodeData.name}" position saved to MongoDB`);
+    } catch (error) {
+      console.error('Failed to save node position:', error);
+    }
+  }, [wsId, wfId]);
+
+  // Handle connection - opens dialog to get condition
   const onConnect = useCallback((connection) => {
     // Find source and target nodes
     const sourceNode = nodes.find(n => n.id === connection.source);
     const targetNode = nodes.find(n => n.id === connection.target);
     
     if (!sourceNode || !targetNode) return;
+
+    // Store the pending connection and open the dialog
+    setPendingEdgeConnection({
+      connection,
+      sourceNode,
+      targetNode
+    });
+    setEdgeConditionPrompt('');
+    setIsEdgeConditionDialogOpen(true);
+  }, [nodes]);
+
+  // Confirm edge creation with the condition
+  const handleEdgeConditionConfirm = useCallback(() => {
+    if (!pendingEdgeConnection) return;
+
+    const { connection, sourceNode, targetNode } = pendingEdgeConnection;
 
     // Create edge data for backend
     const edgeData = {
@@ -640,8 +682,18 @@ export default function WorkflowCanvas({ workspaceId, workflowId, onProvideRefre
         console.error('Failed to create edge:', error);
       });
 
+    // Close dialog and reset state
+    setIsEdgeConditionDialogOpen(false);
+    setPendingEdgeConnection(null);
     setEdgeConditionPrompt('');
-  }, [nodes, edgeConditionPrompt, setEdges, handleEdgeDelete, wsId, wfId]);
+  }, [pendingEdgeConnection, edgeConditionPrompt, setEdges, handleEdgeDelete, wsId, wfId]);
+
+  // Cancel edge creation
+  const handleEdgeConditionCancel = useCallback(() => {
+    setIsEdgeConditionDialogOpen(false);
+    setPendingEdgeConnection(null);
+    setEdgeConditionPrompt('');
+  }, []);
 
   // Reset form
   const resetForm = () => {
@@ -916,14 +968,6 @@ export default function WorkflowCanvas({ workspaceId, workflowId, onProvideRefre
         <h1 className="text-white text-xl font-semibold">Workflow Builder</h1>
         
         <div className="flex items-center gap-2">
-          {/* Edge Condition Input */}
-          <Input
-            placeholder="Edge condition prompt..."
-            value={edgeConditionPrompt}
-            onChange={(e) => setEdgeConditionPrompt(e.target.value)}
-            className="w-64 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-          />
-          
           {/* Create Node Dialog */}
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
@@ -1312,6 +1356,59 @@ export default function WorkflowCanvas({ workspaceId, workflowId, onProvideRefre
         </DialogContent>
       </Dialog>
 
+      {/* Edge Condition Dialog */}
+      <Dialog open={isEdgeConditionDialogOpen} onOpenChange={(open) => {
+        if (!open) handleEdgeConditionCancel();
+      }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Set Edge Condition</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 mt-4">
+            {pendingEdgeConnection && (
+              <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+                <span className="font-medium">Connecting:</span>{' '}
+                <span className="text-blue-600">{pendingEdgeConnection.sourceNode.data.nodeData.name}</span>
+                {' → '}
+                <span className="text-green-600">{pendingEdgeConnection.targetNode.data.nodeData.name}</span>
+              </div>
+            )}
+            
+            <div>
+              <Label htmlFor="edgeCondition">Condition Prompt</Label>
+              <Textarea
+                id="edgeCondition"
+                value={edgeConditionPrompt}
+                onChange={(e) => setEdgeConditionPrompt(e.target.value)}
+                placeholder="e.g., User wants to proceed with booking"
+                rows={3}
+                className="mt-1"
+                autoFocus
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Describe when this path should be taken (AI will evaluate this condition)
+              </p>
+            </div>
+            
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={handleEdgeConditionCancel}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleEdgeConditionConfirm}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                Create Edge
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Context Menu */}
       <NodeContextMenu
         position={contextMenu?.position}
@@ -1326,6 +1423,7 @@ export default function WorkflowCanvas({ workspaceId, workflowId, onProvideRefre
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onNodeDragStop={handleNodeDragStop}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         className="bg-gray-900"

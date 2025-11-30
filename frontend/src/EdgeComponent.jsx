@@ -56,7 +56,7 @@ const CustomEdge = ({
         >
           <div 
             onClick={handleEdgeClick}
-            className="bg-white border border-gray-300 rounded px-2 py-1 text-xs shadow-sm cursor-pointer hover:bg-gray-50 max-w-[150px]"
+            className="bg-white border border-gray-300 rounded px-2 py-1 text-xs shadow-sm cursor-pointer hover:bg-gray-50 max-w-[150px] text-black"
           >
             {data?.edgeData?.condition?.prompt || 'Condition'}
           </div>

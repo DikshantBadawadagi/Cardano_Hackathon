@@ -1,0 +1,174 @@
+/* Dark Theme Styling for Xyflow Canvas */
+
+/* Main canvas dark background */
+.workflow-canvas-dark {
+  background-color: #0f172a !important;
+}
+
+/* Background grid - subtle dark theme */
+.workflow-canvas-dark .react-flow__background {
+  background-color: #0f172a !important;
+}
+
+.workflow-canvas-dark .react-flow__background-pattern-dots {
+  fill: #334155 !important;
+}
+
+/* Controls - Dark theme with better contrast */
+.workflow-controls-dark {
+  background-color: #1e293b !important;
+  border: 1px solid #334155 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.workflow-controls-dark button {
+  background-color: #334155 !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #475569 !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.workflow-controls-dark button:hover {
+  background-color: #475569 !important;
+  color: #e2e8f0 !important;
+}
+
+.workflow-controls-dark button:active {
+  background-color: #64748b !important;
+}
+
+.workflow-controls-dark button svg {
+  stroke: #f1f5f9 !important;
+  fill: none !important;
+  stroke-width: 2 !important;
+}
+
+/* MiniMap - Dark theme */
+.workflow-minimap-dark {
+  background-color: #1e293b !important;
+  border: 1px solid #334155 !important;
+  border-radius: 8px !important;
+}
+
+.workflow-minimap-dark .react-flow__minimap-canvas {
+  background-color: #0f172a !important;
+}
+
+.workflow-minimap-dark .react-flow__minimap-mask {
+  fill: rgba(15, 23, 42, 0.5) !important;
+}
+
+/* Handle styling - connection points */
+.workflow-canvas-dark .react-flow__handle {
+  background-color: #3b82f6 !important;
+  border: 2px solid #1e293b !important;
+  width: 10px !important;
+  height: 10px !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.workflow-canvas-dark .react-flow__handle:hover {
+  background-color: #60a5fa !important;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.5) !important;
+}
+
+/* Edge styling - remove white text override */
+.workflow-canvas-dark .react-flow__edge {
+  stroke: #64748b !important;
+}
+
+.workflow-canvas-dark .react-flow__edge.selected {
+  stroke: #3b82f6 !important;
+}
+
+.workflow-canvas-dark .react-flow__edge-label {
+  background-color: #1e293b !important;
+  color: #e2e8f0 !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  font-size: 12px !important;
+  border: 1px solid #334155 !important;
+}
+
+.workflow-canvas-dark .react-flow__edge-label-bg {
+  fill: #1e293b !important;
+  stroke: #334155 !important;
+}
+
+/* Node styling - ensure dark theme consistency */
+.workflow-canvas-dark .react-flow__node {
+  background-color: #1e293b !important;
+  border: 2px solid #334155 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.workflow-canvas-dark .react-flow__node.selected {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.3) !important;
+}
+
+.workflow-canvas-dark .react-flow__node text {
+  color: #f1f5f9 !important;
+  fill: #f1f5f9 !important;
+}
+
+/* Zoom and Pan interaction feedback */
+.workflow-canvas-dark .react-flow__viewport {
+  background-color: #0f172a !important;
+}
+
+/* Connection line styling while creating edges */
+.workflow-canvas-dark .react-flow__connection {
+  stroke: #3b82f6 !important;
+}
+
+/* Attribution text - make it less visible */
+.workflow-canvas-dark .react-flow__attribution {
+  color: #64748b !important;
+  opacity: 0.5 !important;
+}
+/* Make React Flow edge labels readable */
+.react-flow__edge-text,
+.edge-label {
+  background: rgba(0, 0, 0, 0.72);
+  color: #ffffff;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* If labels are rendered as SVG text, ensure fill is set */
+.react-flow__edge-text svg text,
+.edge-label svg text {
+  fill: #ffffff;
+}
+/* Override Tailwind-made white edge label when canvas is in dark mode */
+.workflow-canvas-dark .react-flow__edge-text > div,
+.workflow-canvas-dark .react-flow__edge-text .bg-white,
+.workflow-canvas-dark .edge-label,
+.workflow-canvas-dark .react-flow__edge-label {
+  background-color: rgba(0, 0, 0, 0.72) !important; /* dark translucent bg */
+  color: #ffffff !important;                        /* white text */
+  border-color: rgba(255,255,255,0.06) !important;
+  box-shadow: none !important;
+  padding: 3px 8px !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  white-space: nowrap !important;
+}
+
+/* Hover state */
+.workflow-canvas-dark .react-flow__edge-text > div:hover,
+.workflow-canvas-dark .react-flow__edge-text .bg-white:hover {
+  background-color: rgba(255,255,255,0.06) !important;
+}
+
+/* If label uses SVG text */
+.workflow-canvas-dark .react-flow__edge-text svg text,
+.workflow-canvas-dark .edge-label svg text {
+  fill: #ffffff !important;
+}

@@ -118,3 +118,45 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* React Flow: improve MiniMap and Controls contrast for dark theme */
+.react-flow__minimap {
+  background: #0b1220; /* darker background */
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.react-flow__minimap .react-flow__minimap-mask {
+  background: rgba(255,255,255,0.02);
+}
+.react-flow__minimap .react-flow__minimap-node {
+  background-color: #06b6d4; /* teal for nodes */
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.react-flow__minimap .react-flow__minimap-viewport {
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.react-flow__controls {
+  background: rgba(15,23,42,0.75); /* semi-opaque dark */
+  border-radius: 8px;
+  padding: 6px;
+}
+.react-flow__controls button {
+  background: transparent;
+  color: #e6eef0; /* icons color */
+  border: 1px solid rgba(255,255,255,0.04);
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+.react-flow__controls button svg {
+  stroke: currentColor;
+  fill: none;
+}
+
+/* Ensure the minimap node labels/icons (if any) are visible */
+.react-flow__minimap svg {
+  color: #052f34;
+}
